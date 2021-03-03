@@ -14,12 +14,12 @@ $ git clone https://github.com/allinard/stl_hrencounters
 
 Dependencies:
 * Python 3.8
-* numpy
-* matplotlib
-* scipy
-* sklearn
-* dill
-* pandas
+	* numpy
+	* matplotlib
+	* scipy
+	* sklearn
+	* dill
+	* pandas
 
 
 
@@ -29,15 +29,15 @@ Dependencies:
 The module `learn_probstl.py` implements the learning probabilistic STL formulae from data.
 
 ```
-pSTL = learn_stl(trajectories, 
-				 alpha=1.6,
-				 beta=5,
-				 gamma=10,
-				 theta=50,
-				 w=9,
-				 p=1,
-				 H=114,
-				 verbose=False)
+pSTL = learn_stl(trajectories,
+		alpha=1.6,
+		beta=5,
+		gamma=10,
+		theta=50,
+		w=9,
+		p=1,
+		H=114,
+		verbose=False)
 ```
 which learns a probabilistic STL specification given a set of trajectories `trajectories`:
 * `trajectories`: the set of input trajectories from which we want to learn a specification. In the form of a list of n-dimensional datapoints over time steps.
