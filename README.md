@@ -86,8 +86,8 @@ We also share a dataset of trajectories collected through an online study where 
 The raw dataset (pickle of a pandas dataframe) is located in `user_study/data/raw/trajectories.p`.
 
 After preprocessing, it is composed of:
-* `user_study/data/trajectories_nocollision`: a set of trajectories avoiding the robot properly
-* `user_study/data/trajectories_collision`: a set of trajectories colliding with the robot (negative data)
+* `user_study/data/trajectories_nocollision.p`: a set of trajectories avoiding the robot properly (pickle of list of 2-dimensional datapoints)
+* `user_study/data/trajectories_collision.p`: a set of trajectories colliding with the robot (negative data, pickle of list of 2-dimensional datapoints)
 
 
 

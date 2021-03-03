@@ -3,6 +3,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 mpl.rcParams['pdf.fonttype'] = 42
+mpl.rcParams['axes.titlesize'] = 20
+mpl.rcParams['xtick.labelsize'] = 22
+mpl.rcParams['ytick.labelsize'] = 22
+mpl.rcParams['axes.labelsize'] = 25
 
 # matplotlib.rcParams['text.usetex'] = True
 
@@ -59,8 +63,8 @@ y_all = scores[:, 1]
 x_pareto = pareto_front[:, 0]
 y_pareto = pareto_front[:, 1]
 
-plt.figure(figsize=(5,5))
-fig,ax = plt.subplots(figsize=(5,5))
+# plt.figure(figsize=(5,5))
+fig,ax = plt.subplots(figsize=(10,10))
 sc = plt.scatter(x_all, y_all)
 
 
@@ -73,7 +77,7 @@ def update_annot(ind):
 
     pos = sc.get_offsets()[ind["ind"][0]]
     annot.xy = pos
-    annot.set_text("$\gamma = "+str(scores_list.index([pos[0],pos[1]])+1)+"$")
+    annot.set_text("$\\theta = "+str(scores_list.index([pos[0],pos[1]])+1)+"$")
     annot.get_bbox_patch().set_alpha(0.4)
 
 
@@ -99,12 +103,12 @@ plt.xlabel('TPR')
 plt.ylabel('TNR')
 
 
-# plt.show()
-# exit()
+plt.show()
+exit()
 
 
-plt.savefig(('user_study/pareto.pdf'))
-plt.savefig(('user_study/pareto.png'))   
+plt.savefig(('../user_study/output/pareto.pdf'))
+plt.savefig(('../user_study/output/pareto.png'))   
 
     
 exit()
