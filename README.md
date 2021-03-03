@@ -1,8 +1,13 @@
 # Formalizing Trajectories in Human-Robot Encounters via Probabilistic STL Inference
 Dataset and code to formalize trajectories in human-robot encounters via probabilistic STL inference
 
+
 ## Introduction
 
+We are interested in formalizing human trajectories in human-robot encounters.
+We consider a particular case where a human and a robot walk towards each other. A question that arises is whether, when, and how humans will deviate from their trajectory to avoid a collision. These human trajectories can then be used to generate socially acceptable robot trajectories.
+To model these trajectories, we propose this data drive algorithm to extract a formal specification expressed in Signal Temporal Logic with probabilistic predicates.
+We apply our method on trajectories collected through an online study where participants had to avoid colliding with a robot in a shared environment.
 
 
 ## Downloading sources
@@ -55,6 +60,19 @@ which learns a probabilistic STL specification given a set of trajectories `traj
 
 ### CLI
 
+The module `learn_probstl.py` can be run in a command line:
+
+```
+python learn_probstl.py -i <input dataset> -n <input negative trajectories> -a <alpha parameter> -b <beta parameter> -g <gamma parameter> -h <horizon of formula> -t <theta parameter> -v <verbose 0/1> -d <dill pSTL formula 0/1> -p <output plot 0/1>'
+```
+
+Options are optional. By default, `-i` and `-n` refer to the dataset in `user_study/data/trajectories_nocollision` and `user_study/data/trajectories_collision` respectively.
+
+Try, for instance:
+
+```
+python learn_probstl.py -g 25 -t 20
+```
 
 
 
@@ -62,6 +80,14 @@ which learns a probabilistic STL specification given a set of trajectories `traj
 
 
 ## Dataset
+
+We also share a dataset of trajectories collected through an online study where participants had to avoid colliding with a robot in a shared environment (see [video](https://github.com/allinard/stl_hrencounters/blob/main/user_study/video.mp4)).
+
+The raw dataset (pickle of a pandas dataframe) is located in `user_study/data/raw/trajectories.p`.
+
+After preprocessing, it is composed of:
+* `user_study/data/trajectories_nocollision`: a set of trajectories avoiding the robot properly
+* `user_study/data/trajectories_collision`: a set of trajectories colliding with the robot (negative data)
 
 
 

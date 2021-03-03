@@ -1,3 +1,4 @@
+﻿import sys, getopt, os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -269,9 +270,7 @@ def learn_stl(trajectories, verbose=False, alpha=1.6, beta=5, gamma=10, theta=50
             except IndexError:
                 pass
     
-    # print(graph)
     graph.remove_below_threshold(gamma)
-    # print(graph)
     
     paths = []
     for nbinitials in CHIS_INTERVALS[lst_chisintervals[0]]:
@@ -295,56 +294,91 @@ def learn_stl(trajectories, verbose=False, alpha=1.6, beta=5, gamma=10, theta=50
 """
 if __name__ == '__main__':
 
-    #PARAMS
-    verbose = True
-    plot = True
-    pickle_res = False
 
+    #Default values of parameters
+    alpha=1.6
+    beta=5
+    gamma=10
+    theta=50
+    H=114
+    verbose = False
+    plot = False
+    pickle_res = False
     
     negative_data = pickle.load( open( "user_study/data/trajectories_collision.p", "rb" ) )
     positive_data = pickle.load( open( "user_study/data/trajectories_nocollision.p", "rb" ) )
     
+    #TODO CLI args for Savitzky-Golay filter parameters
+    w=9
+    p=1
     
-    list_thetas = []
+    #Parse CLI parameters and replace default parameters
+    try:
+        opts, args = getopt.getopt(sys.argv[1:],"i:n:a:b:g:h:t:v:d:p:",["input=","negative=","alpha=","beta","gamma=","horizon=","theta=","verbose=","dilloutput=","plot="])
+    except getopt.GetoptError:
+        print('some options not filled, will proceed with default parameters for these')
+        
+    dictbool = {'0':False, '1':True}
+    for opt, arg in opts:
+        if opt in ("-i", "--input"):
+            inputfile = arg
+            positive_data = pickle.load( open(inputfile, "rb" ) )
+        elif opt in ("-n", "--negative"):
+            inputfile = arg
+            negative_data = pickle.load( open(inputfile, "rb" ) )
+        elif opt in ("-a", "--alpha"):
+            alpha = int(arg)
+        elif opt in ("-b", "--beta"):
+            beta = int(arg)
+        elif opt in ("-g", "--gamma"):
+            gamma = int(arg)
+        elif opt in ("-h", "--horizon"):
+            H = int(arg)
+        elif opt in ("-t", "--theta"):
+            theta = int(arg)
+        elif opt in ("-v", "--verbose"):
+            verbose = dictbool[arg]
+        elif opt in ("-d", "--dilloutput"):
+            pickle_res = dictbool[arg]
+        elif opt in ("-p", "--plot"):
+            plot = dictbool[arg]
+
+
+    #learn pSTL formula
+    pstl, RELEVANT_CHIS = learn_stl(positive_data, alpha=alpha, beta=beta, gamma=gamma, theta=theta, w=w, p=p, H=H, verbose=verbose)
     
-    # for theta in range(1,100):
-    for theta in [20]:
-        pstl, RELEVANT_CHIS = learn_stl(positive_data,verbose=False,theta=theta, gamma=25)
+    #pickle/Dill result
+    if pickle_res:
+        with open("user_study/output/phi.dill", "wb") as dill_file:
+            pickle_dill.dump(pstl, dill_file)
+    
+    #Print learnt formula
+    print("\\phi = ",pstl)
+    NEW_ID = 1
+    for chi in RELEVANT_CHIS:
+        print("\n \\\\ \n")
+        gaussian = RELEVANT_CHIS[chi]
+        print(gaussian.totex())
+        #PLOT
+        if plot:
+            x, y = np.mgrid[-10:10:100j, -1:45:100j]
+            pos = np.dstack((x, y))
+            rv = st.multivariate_normal(gaussian.mu, gaussian.sigma)
+            fig2 = plt.figure(figsize=(3,6))
+            plt.tight_layout()
+            ax2 = fig2.add_subplot(111)
+            ax2.contourf(x, y, rv.pdf(pos))
+            plt.savefig(('user_study/output/chi_'+str(gaussian.ID)+'.pdf'))
+            plt.savefig(('user_study/output/chi_'+str(gaussian.ID)+'.png'))
+        NEW_ID = NEW_ID+1
         
-        if pickle_res:
-            with open("user_study/output/phi.dill", "wb") as dill_file:
-                pickle_dill.dump(pstl, dill_file)
-        
-        if verbose:
-            print("\\phi = ",pstl)
-            NEW_ID = 1
-            for chi in RELEVANT_CHIS:
-                print("\n \\\\ \n")
-                gaussian = RELEVANT_CHIS[chi]
-                print(gaussian.totex())
-                #PLOT
-                if plot:
-                    x, y = np.mgrid[-10:10:100j, -1:45:100j]
-                    pos = np.dstack((x, y))
-                    rv = st.multivariate_normal(gaussian.mu, gaussian.sigma)
-                    fig2 = plt.figure(figsize=(3,6))
-                    plt.tight_layout()
-                    ax2 = fig2.add_subplot(111)
-                    ax2.contourf(x, y, rv.pdf(pos))
-                    plt.savefig(('user_study/output/chi_'+str(gaussian.ID)+'.pdf'))
-                    plt.savefig(('user_study/output/chi_'+str(gaussian.ID)+'.png'))
-                NEW_ID = NEW_ID+1
-            
 
-        ACC, BA, TPR, TNR = evaluate(pstl, positive_data, negative_data, verbose=False)
+    #Evaluate against positive and negative dataset
+    ACC, BA, TPR, TNR = evaluate(pstl, positive_data, negative_data, verbose=verbose)
 
-        if verbose:
-            print("accuracy",ACC)
-            print("balanced accuracy",BA)
-            print("tpr",TPR)
-            print("tnr",TNR)
+    print("accuracy",ACC)
+    print("balanced accuracy",BA)
+    print("tpr",TPR)
+    print("tnr",TNR)
+    
         
-        print(theta,[TPR,TNR],BA)
-        list_thetas.append([TPR,TNR])
-        
-    print(list_thetas)    
