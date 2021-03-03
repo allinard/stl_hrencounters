@@ -87,7 +87,21 @@ def evaluate(pstl, positive_data, negative_data, verbose=False):
 
 
 def learn_stl(trajectories, verbose=False, alpha=1.6, beta=5, gamma=10, theta=50, w=9, p=1, H=114):
-
+    """
+        Function learning a pSTL formula from a set of trajectories/signals
+        This function takes 9 arguments:
+            * trajectories: the set of trajectories, in the form of a list of n-dimensional datapoints over time steps
+            * alpha (optional, default 1.6): maximum distance within clusters of normal distributions at time t
+            * beta (optional, default 5): maximum number of normal distributions clustering datapoints at time t
+            * gamma (optional, default 10): prunning factor of possible conjunctions in the final pSTL formula (any number between 0 and 99).
+            * theta (optional, default 50): tightness factor (any number between 1 and 99)
+            * w (optional, default 9): Savitzky-Golay filter's window
+            * p (optional, default 1): Savitzky-Golay filter's degree
+            * H (optional, default H): maximum horizon of the pSTL formula
+        Returns: pstl, RELEVANT_CHIS
+            * pstl: a pSTL formula 
+            * RELEVANT_CHIS: probabilistic predicates forming pstl
+    """
 
     cv_type = 'full'
     
